@@ -14,6 +14,10 @@ install_node() {
 install_deps_dnf() {
 	echo "About to install git, make, gettext, g++, pulseaudio, python3"
 	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel python3-pip python3.9
+	
+	sudo dnf -y install meson gcc-c++ 'pkgconfig(alsa)' 'pkgconfig(glib-2.0)' 'pkgconfig(libsoup-2.4)' \
+		'pkgconfig(json-glib-1.0)' 'pkgconfig(libevdev)' 'pkgconfig(gstreamer-1.0)' 'pkgconfig(speex)' 'pkgconfig(speexdsp)' \	
+		'pkgconfig(webrtc-audio-processing)' gstreamer1-plugins-base gstreamer1-plugins-good cmake 
 }
 
 install_deps_ubuntu() {
@@ -99,5 +103,15 @@ if ! test -d genie-server ; then
 	git clone https://github.com/stanford-oval/genie-server
 	pushd genie-server >/dev/null
 	npm ci
+	popd
+fi
+
+if ! test -d genie-client ; then 
+	git clone --recurse-submodules https://github.com/stanford-oval/genie-client
+	pushd genie-client >/dev/null
+	./scripts/get-assets.sh
+	meson ./build/
+	ninja -C ./build/
+	ninja -C ./build/ install
 	popd
 fi

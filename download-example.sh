@@ -13,13 +13,13 @@ fi
 if ! test -f workdir/yelp.tar.xz ; then
 	pushd workdir >/dev/null
 	wget https://almond-static.stanford.edu/research/tutorials/yelp.tar.xz
-    popd >/dev/null
+	popd >/dev/null
 fi
 
 if ! test -d workdir/com.yelp ; then 
 	pushd workdir >/dev/null
 	tar -xf yelp.tar.xz
-    make everything/schema.tt
+	make everything/schema.tt
 	popd >/dev/null
 fi
 
