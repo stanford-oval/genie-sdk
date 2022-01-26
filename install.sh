@@ -4,41 +4,30 @@ set -e
 set -x
 set -o pipefail
 
+install_node() {
+	echo "About to install nvm and nodejs 14"
+	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+	\. $HOME/.nvm/nvm.sh --no-use
+	nvm install 14
+}
+
 install_deps_dnf() {
-	echo "About to install nodejs 12"
-	sudo dnf -y module install nodejs:12
 	echo "About to install git, make, gettext, g++, python3"
-	sudo dnf -y install git make gettext gcc-c++ python3-pip
-	echo "About to install thingpedia cli"
-	sudo chown -R $USER /opt/node-v12.22.9-linux-x64/lib/node_modules/
-	npm install -g thingpedia-cli
+	sudo dnf -y install git make gettext gcc-c++ python3-pip python3.9
 }
 
 install_deps_ubuntu() {
 	echo "About to install git, make, gettext, curl, python3"
-	sudo apt -y install git make gettext g++ curl python3-pip
-	curl -sL https://nodejs.org/dist/latest-v12.x/node-v12.22.9-linux-x64.tar.xz -o node-v12.22.9-linux-x64.tar.xz 
-	echo "About to install nodejs"
-	sudo tar -C /opt --no-same-owner -xf node-v12.22.9-linux-x64.tar.xz 
-	sudo ln -sf /opt/node-v12.22.9-linux-x64/bin/node /usr/local/bin/node
-	sudo ln -sf /opt/node-v12.22.9-linux-x64/bin/npm /usr/local/bin/npm
-	echo "About to install thingpedia cli"
-	npm install -g thingpedia-cli
+	sudo apt -y install git make gettext g++ curl python3-pip python3.9
 }
 
 install_deps_debian() {
 	echo "About to install git, make, gettext, curl, python3"
-	sudo apt -y install git make g++ curl python3-pip apt-transport-https gettext
-	curl -sL https://nodejs.org/dist/latest-v12.x/node-v12.22.9-linux-x64.tar.xz -o node-v12.22.9-linux-x64.tar.xz 
-	echo "About to install nodejs"
-	sudo tar -C /opt --no-same-owner -xf node-v12.22.9-linux-x64.tar.xz 
-	sudo ln -sf /opt/node-v12.22.6-linux-x64/bin/node /usr/local/bin/node
-	sudo ln -sf /opt/node-v12.22.6-linux-x64/bin/npm /usr/local/bin/npm
-	echo "About to install thingpedia cli"
-	npm install -g thingpedia-cli
+	sudo apt -y install git make gettext g++ curl python3-pip python3.9 apt-transport-https 
 }
 
 install_deps() {
+	install_node
 	if grep -qE "ID(_LIKE)?=.*fedora.*" /etc/os-release ; then
 		install_deps_dnf
 	elif grep -qE "ID(_LIKE)?=.*ubuntu.*" /etc/os-release ; then
@@ -46,13 +35,13 @@ install_deps() {
 	elif grep -qE "ID(_LIKE)?=.*debian.*" /etc/os-release ; then
 		install_deps_debian
 	else
-		echo "Cannot detect the running distro. Please install nodejs 12.* using your package manager."
+		echo "Cannot detect the running distro. Please install dependencies using your package manager."
 		exit 1
 	fi
 }
 
 check_deps() {
-	for dep in git node npm make g++ msgfmt pip3 ; do
+	for dep in git node npm make g++ msgfmt python3.9 ; do
 		if ! which $dep >/dev/null 2>&1 ; then
 			return 1
 		fi
@@ -64,36 +53,6 @@ if ! check_deps ; then
 	install_deps
 fi
 
-add_path() {
-	profile_file=
-	if test -f ~/.bash_profile ; then
-		profile_file=~/.bash_profile
-	else
-		profile_file=~/.profile
-	fi
-	path="$1"
-	case "$PATH" in
-		*$path*)
-			;;
-		*)
-			echo 'export PATH=$PATH:'$path >> $profile_file
-			export PATH=$PATH:$path
-			;;
-	esac
-}
-
-add_path "$HOME/.local/bin"
-
-# if which pip >/dev/null 2>&1 && grep -qE "ID(_LIKE)?=.*debian.*" /etc/os-release ; then
-# 	echo "use pip"
-# 	PIP=pip
-# 	PYTHON=python
-# else
-# 	echo "use pip3"
-# 	PIP=pip3
-# 	PYTHON=python3
-# fi
-
 if ! test -d genie-toolkit ; then
 	git clone https://github.com/stanford-oval/genie-toolkit
 	pushd genie-toolkit >/dev/null
@@ -102,47 +61,37 @@ if ! test -d genie-toolkit ; then
 	popd >/dev/null
 fi
 
-venv_activate () {
-  . genie/bin/activate
-}
-
-PIP=pip3
-PYTHON=python3
-
-if ! test -d genienlp ; then
-	git clone https://github.com/stanford-oval/genienlp
-	${PIP} install --upgrade pip
-	if [[ -z "${VIRTUAL_ENV}" && -z "${CONDA_DEFAULT_ENV}" ]] ; then
-		${PYTHON} -m pip install --user virtualenv
-		${PYTHON} -m virtualenv genie
-		venv_activate
-	elif [[ -n "${VIRTUAL_ENV}" ]] ; then
+venv_activate() {
+	if [[ -n "${VIRTUAL_ENV}" ]] ; then
 		deactivate
-		~/.local/bin/virtualenv -p ${PYTHON} genie
-		venv_activate
-	else
+	elif [[ -n "${CONDA_DEFAULT_ENV}" ]] ; then 
 		CONDA_VERSION=$(cut -d ' ' -f 2 <<< "$(conda -V)")
 		VERSION_NUM=$(cut -d '.' -f 1,2 <<< "$CONDA_VERSION")
 		if [[ "`echo "${VERSION_NUM} < 4.6" | bc`" -eq 1 ]]; then
-			echo "Conda version < 4.6"
 			conda init bash
 			source deactivate
-			conda create --no-default-packages -n genie ${PYTHON} -y -q
-			source activate genie
-		else
-			echo "Conda version >= 4.6"
+		else 
 			conda init bash
-			conda deactivate
-			conda create --no-default-packages -n genie ${PYTHON} -y -q
-			conda activate genie
+			conda deactivate 
 		fi
 	fi
+
+	python3 -m pip install --user virtualenv
+	python3 -m virtualenv $HOME/.virtualenv/genie --python=$(which python3.9)
+	source $HOME/.virtualenv/genie/bin/activate
+}
+
+if ! test -d genienlp ; then
+	git clone https://github.com/stanford-oval/genienlp
+
+	venv_activate
+	pip install --upgrade pip	
 	echo $(which python)
-	${PIP} install 'ray[serve]==1.6.0'
+	pip install 'ray[serve]==1.6.0'
 	pushd genienlp
-	${PIP} install -e .
-	${PIP} install tensorboard
-	${PYTHON} -m spacy download en_core_web_sm
+	pip install -e .
+	pip install tensorboard
+	python -m spacy download en_core_web_sm
 	popd
 fi
 
