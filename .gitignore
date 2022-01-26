@@ -1,5 +1,7 @@
 .embeddings
 .home
+.virtualenv
+.homeassistant
 
 genie-toolkit
 genie-server

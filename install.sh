@@ -4,6 +4,8 @@ set -e
 set -x
 set -o pipefail
 
+. ./lib.sh
+
 install_node() {
 	echo "About to install nvm and nodejs 14"
 	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -38,6 +40,9 @@ install_deps() {
 		echo "Cannot detect the running distro. Please install dependencies using your package manager."
 		exit 1
 	fi
+
+	venv_activate "ha"
+	pip install homeassistant
 }
 
 check_deps() {
@@ -61,30 +66,10 @@ if ! test -d genie-toolkit ; then
 	popd >/dev/null
 fi
 
-venv_activate() {
-	if [[ -n "${VIRTUAL_ENV}" ]] ; then
-		deactivate
-	elif [[ -n "${CONDA_DEFAULT_ENV}" ]] ; then 
-		CONDA_VERSION=$(cut -d ' ' -f 2 <<< "$(conda -V)")
-		VERSION_NUM=$(cut -d '.' -f 1,2 <<< "$CONDA_VERSION")
-		if [[ "`echo "${VERSION_NUM} < 4.6" | bc`" -eq 1 ]]; then
-			conda init bash
-			source deactivate
-		else 
-			conda init bash
-			conda deactivate 
-		fi
-	fi
-
-	python3 -m pip install --user virtualenv
-	python3 -m virtualenv .virtualenv/genie --python=$(which python3.9)
-	source .virtualenv/genie/bin/activate
-}
-
 if ! test -d genienlp ; then
 	git clone https://github.com/stanford-oval/genienlp
 
-	venv_activate
+	venv_activate "genie"
 	pip install --upgrade pip	
 	echo $(which python)
 	pip install 'ray[serve]==1.6.0'
@@ -104,7 +89,7 @@ fi
 
 if ! test -d thingpedia-common-devices ; then 
 	git clone https://github.com/stanford-oval/thingpedia-common-devices
-	pushd genie-server > /dev/null
+	pushd thingpedia-common-devices > /dev/null
 	npm ci 
 	popd
 fi
