@@ -80,8 +80,8 @@ venv_activate() {
 	fi
 
 	python3 -m pip install --user virtualenv
-	python3 -m virtualenv $HOME/.virtualenv/genie --python=$(which python3.9)
-	source $HOME/.virtualenv/genie/bin/activate
+	python3 -m virtualenv .virtualenv/genie --python=$(which python3.9)
+	source .virtualenv/genie/bin/activate
 }
 
 if ! test -d genienlp ; then
