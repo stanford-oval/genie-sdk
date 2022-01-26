@@ -101,3 +101,10 @@ if ! test -d genie-server ; then
 	npm ci
 	popd
 fi
+
+if ! test -d thingpedia-common-devices ; then 
+	git clone https://github.com/stanford-oval/thingpedia-common-devices
+	pushd genie-server > /dev/null
+	npm ci 
+	popd
+fi
