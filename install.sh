@@ -15,17 +15,17 @@ install_node() {
 
 install_deps_dnf() {
 	echo "About to install git, make, gettext, g++, pulseaudio, python3"
-	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel python3-pip python3.9
+	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel libjpeg-devel python3-pip python3-devel python3-wheel python3.9 turbojpeg
 }
 
 install_deps_ubuntu() {
 	echo "About to install git, make, gettext, curl, python3"
-	sudo apt -y install git make gettext g++ curl libpulse-dev python3-pip python3.9
+	sudo apt -y install git make gettext g++ curl libpulse-dev libjpeg-dev python3-pip python3-dev python3.9 libturbojpeg0
 }
 
 install_deps_debian() {
 	echo "About to install git, make, gettext, curl, python3"
-	sudo apt -y install git make gettext g++ curl libpulse-dev python3-pip python3.9 apt-transport-https 
+	sudo apt -y install git make gettext g++ curl libpulse-dev libjpeg-dev python3-pip python3-dev python3.9 libturbojpeg0 apt-transport-https 
 }
 
 install_deps() {
