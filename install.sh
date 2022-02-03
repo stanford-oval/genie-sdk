@@ -8,7 +8,7 @@ install_node() {
 	echo "About to install nvm and nodejs 14"
 	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 	\. $HOME/.nvm/nvm.sh --no-use
-	nvm install 14
+	nvm install 14.18
 }
 
 install_deps_dnf() {
