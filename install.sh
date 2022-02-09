@@ -6,9 +6,11 @@ set -o pipefail
 
 install_node() {
 	echo "About to install nvm and nodejs 14"
-	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-	\. $HOME/.nvm/nvm.sh --no-use
-	nvm install 14.18
+	if [[ -n $(nvm -v 2>&1) ]] ; then
+		wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+		\. $HOME/.nvm/nvm.sh --no-use
+	fi
+	nvm install 14.18	
 }
 
 install_deps_dnf() {
@@ -27,7 +29,6 @@ install_deps_debian() {
 }
 
 install_deps() {
-	install_node
 	if grep -qE "ID(_LIKE)?=.*fedora.*" /etc/os-release ; then
 		install_deps_dnf
 	elif grep -qE "ID(_LIKE)?=.*ubuntu.*" /etc/os-release ; then
@@ -52,6 +53,8 @@ check_deps() {
 if ! check_deps ; then
 	install_deps
 fi
+	
+install_node
 
 if ! test -d genie-toolkit ; then
 	git clone https://github.com/stanford-oval/genie-toolkit
