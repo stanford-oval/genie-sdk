@@ -61,7 +61,6 @@ fi
 if ! test -d genie-toolkit ; then
 	git clone https://github.com/stanford-oval/genie-toolkit
 	pushd genie-toolkit >/dev/null
-	git checkout wip/fix-make
 	npm ci
 	popd >/dev/null
 fi
