@@ -3,7 +3,9 @@
 
 genie-toolkit
 genie-server
+genie-client
 genienlp
+thingpedia-common-devices
 
 workdir
 devices
