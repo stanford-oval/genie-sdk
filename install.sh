@@ -109,5 +109,6 @@ if ! test -d thingpedia-common-devices ; then
 	git clone https://github.com/stanford-oval/thingpedia-common-devices
 	pushd genie-server > /dev/null
 	npm ci 
+	npx make
 	popd
 fi
