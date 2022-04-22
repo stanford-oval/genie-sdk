@@ -56,14 +56,6 @@ fi
 	
 install_node
 
-if ! test -d genie-toolkit ; then
-	git clone https://github.com/stanford-oval/genie-toolkit
-	pushd genie-toolkit >/dev/null
-	git checkout wip/fix-make
-	npm ci
-	popd >/dev/null
-fi
-
 venv_activate() {
 	if [[ -n "${VIRTUAL_ENV}" ]] ; then
 		deactivate
@@ -84,19 +76,22 @@ venv_activate() {
 	source .virtualenv/genie/bin/activate
 }
 
-if ! test -d genienlp ; then
-	git clone https://github.com/stanford-oval/genienlp
+venv_activate
+pip install --upgrade pip	
+echo $(which python)
+pip install genienlp
+pip install tensorboard
+python -m spacy download en_core_web_sm
 
-	venv_activate
-	pip install --upgrade pip	
-	echo $(which python)
-	pip install 'ray[serve]==1.6.0'
-	pushd genienlp
-	pip install -e .
-	pip install tensorboard
-	python -m spacy download en_core_web_sm
-	popd
+if ! test -d genie-toolkit ; then
+	git clone https://github.com/stanford-oval/genie-toolkit
+	pushd genie-toolkit >/dev/null
+	git checkout wip/fix-make
+	npm ci
+	popd >/dev/null
 fi
+
+
 
 if ! test -d genie-server ; then
 	git clone https://github.com/stanford-oval/genie-server
