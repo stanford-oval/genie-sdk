@@ -16,23 +16,24 @@ jobs:
         id: cache-libpostal
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/cache
+          path: |
+            ${{ github.workspace }}/downloads
+            ${{ github.workspace }}/libpostal
           key: ${{ runner.os }}-libpostal
 
       - name: build libpostal
         if: steps.cache-libpostal.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ github.workspace }}/cache/downloads
-          cd ${{ github.workspace }}/cache
+          mkdir ${{ github.workspace }}/downloads
           git clone https://github.com/openvenues/libpostal
           cd libpostal
           ./bootstrap.sh
-          ./configure --datadir=${{ github.workspace }}/cache/downloads
+          ./configure --datadir=${{ github.workspace }}/downloads
           make -j4
 
       - name: install libpostal
         run: |
-          cd ${{ github.workspace }}/cache/libpostal
+          cd ${{ github.workspace }}/libpostal
           sudo make install
 
       - name: run SDK install script
