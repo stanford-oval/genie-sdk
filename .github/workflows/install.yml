@@ -9,6 +9,9 @@ jobs:
         with:
           node-version: '14'
 
+      - name: le sigh
+        run: pwd
+
       - name: cache libpostal download and build
         id: cache-libpostal
         uses: actions/cache@v3
@@ -35,5 +38,6 @@ jobs:
           sudo make install
 
       - name: run SDK install script
-        run: cd ~ && ls -al && ./install.sh
+        run: cd /genie-sdk && ls -al && ./install.sh
+        run: cd / && ls -al
 
