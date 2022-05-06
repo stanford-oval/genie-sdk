@@ -2,16 +2,13 @@ name: install SDK
 on: [push]
 
 jobs:
-
-  build-libpostal:
+  install-sdk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-
       - uses: actions/setup-python@v3
         with:
           python-version: '3.9'
@@ -45,10 +42,6 @@ jobs:
           sudo make install
           sudo ldconfig
 
-  run-install-sh:
-    needs: build-libpostal
-    runs-on: ubuntu-latest
-    steps:
       - name: run SDK install script
-        run: cd ${{ github.workspace }} && ls -al && ./install.sh
+        run: cd ${{ github.workspace }} && ./install.sh
 
