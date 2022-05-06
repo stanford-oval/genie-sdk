@@ -19,9 +19,6 @@ jobs:
           path: ${{ github.workspace }}/cache
           key: ${{ runner.os }}-libpostal
 
-#     - name: install libpostal dependencies
-#       run: sudo apt-get install curl autoconf automake libtool pkg-config
-
       - name: build libpostal
         if: steps.cache-libpostal.outputs.cache-hit != 'true'
         run: |
@@ -31,11 +28,10 @@ jobs:
           cd libpostal
           ./bootstrap.sh
           ./configure --datadir=${{ github.workspace }}/cache/downloads
-          sudo make
+          make -j4
 
       - name: install libpostal
         run: |
-          mkdir -p ${{ github.workspace }}/cache/libpostal
           cd ${{ github.workspace }}/cache/libpostal
           sudo make install
 
