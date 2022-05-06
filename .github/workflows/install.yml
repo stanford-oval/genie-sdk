@@ -9,11 +9,13 @@ jobs:
         with:
           node-version: '14'
 
-      - name: cache libpostal
+      - name: cache libpostal download and build
         id: cache-libpostal
         uses: actions/cache@v3
         with:
-          path: libpostal
+          path: |
+            libpostal
+            /usr/local/share/libpostal
           key: ${{ runner.os }}-libpostal
 
       - name: build libpostal
@@ -33,5 +35,5 @@ jobs:
           sudo make install
 
       - name: run SDK install script
-        run: cd ~ && ./install.sh
+        run: cd ~ && ls -al && ./install.sh
 
