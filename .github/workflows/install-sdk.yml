@@ -1,0 +1,54 @@
+name: install SDK
+on: [push]
+
+jobs:
+
+  build-libpostal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: cache libpostal download and build
+        id: cache-libpostal
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/downloads
+            ~/libpostal
+            ${{ github.workspace }}/genie-server
+            ${{ github.workspace }}/genie-toolkit
+          key: ${{ runner.os }}-libpostal
+
+      - name: build libpostal
+        if: steps.cache-libpostal.outputs.cache-hit != 'true'
+        run: |
+          mkdir ~/downloads
+          cd ~
+          git clone https://github.com/openvenues/libpostal
+          cd libpostal
+          [ -f Makefile ] && make distclean
+          ./bootstrap.sh
+          ./configure --datadir=$HOME/downloads
+          make -j4
+
+      - name: install libpostal
+        run: |
+          cd ~/libpostal
+          sudo make install
+          sudo ldconfig
+
+  run-install-sh:
+    needs: build-libpostal
+    runs-on: ubuntu-latest
+    steps:
+      - name: run SDK install script
+        run: cd ${{ github.workspace }} && ls -al && ./install.sh
+
