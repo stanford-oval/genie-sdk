@@ -24,7 +24,7 @@ jobs:
       - name: build libpostal
         if: steps.cache-libpostal.outputs.cache-hit != 'true'
         run: |
-          mkdir /downloads
+          mkdir ~/downloads
           cd ~
           git clone https://github.com/openvenues/libpostal
           cd libpostal
