@@ -27,6 +27,7 @@ jobs:
           mkdir ${{ github.workspace }}/downloads
           git clone https://github.com/openvenues/libpostal
           cd libpostal
+          autoreconf -i
           ./bootstrap.sh
           ./configure --datadir=${{ github.workspace }}/downloads
           make -j4
