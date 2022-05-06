@@ -1,11 +1,21 @@
-name: learn-github-actions
+name: check-install-sh
 on: [push]
 jobs:
-  check-bats-version:
+  run-install-sh:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - run: ./install.sh
+      - name: install libpostal
+        run: |
+          cd ~
+          git clone https://github.com/openvenues/libpostal
+          cd libpostal
+          ./bootstrap.sh
+          ./configure
+          sudo make
+          sudo make install
+      - name: run SDK install script
+        run: cd ~ && ./install.sh
