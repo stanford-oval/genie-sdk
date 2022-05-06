@@ -38,6 +38,7 @@ jobs:
           sudo make install
 
       - name: run SDK install script
-        run: cd /genie-sdk && ls -al && ./install.sh
-        run: cd / && ls -al
+        run: |
+          cd /genie-sdk && ls -al && ./install.sh
+          cd / && ls -al
 
