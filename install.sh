@@ -50,12 +50,6 @@ check_deps() {
 	return 0
 }
 
-if ! check_deps ; then
-	install_deps
-fi
-	
-install_node
-
 venv_activate() {
 	if [[ -n "${VIRTUAL_ENV}" ]] ; then
 		unset VIRTUAL_ENV & deactivate
@@ -76,11 +70,11 @@ venv_activate() {
 	source .virtualenv/genie/bin/activate
 }
 
-venv_activate
-pip install --upgrade pip	
-echo $(which python)
-pip install genienlp tensorboard spacy 
-python -m spacy download en_core_web_sm
+if ! check_deps ; then
+	install_deps
+fi
+	
+install_node
 
 if ! test -d genie-toolkit ; then
 	git clone https://github.com/stanford-oval/genie-toolkit
@@ -105,3 +99,9 @@ if ! test -d thingpedia-common-devices ; then
 	npm link genie-toolkit
 	popd
 fi
+
+venv_activate
+pip install --upgrade pip	
+echo $(which python)
+pip install genienlp tensorboard spacy 
+python -m spacy download en_core_web_sm
