@@ -87,6 +87,7 @@ if ! test -d genie-toolkit ; then
 	git clone https://github.com/stanford-oval/genie-toolkit
 	pushd genie-toolkit >/dev/null
 	npm ci
+	npm link
 	popd >/dev/null
 fi
 
@@ -102,5 +103,6 @@ if ! test -d thingpedia-common-devices ; then
 	pushd thingpedia-common-devices > /dev/null
 	npm ci 
 	npx make
+	npm link genie-toolkit
 	popd
 fi
