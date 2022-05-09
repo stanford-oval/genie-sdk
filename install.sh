@@ -15,17 +15,17 @@ install_node() {
 
 install_deps_dnf() {
 	echo "About to install git, make, gettext, g++, pulseaudio, python3"
-	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel python3-pip python3.9
+	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel python3-pip python3.9 python3.9-dev
 }
 
 install_deps_ubuntu() {
 	echo "About to install git, make, gettext, curl, python3"
-	sudo apt -y install git make gettext g++ curl libpulse-dev python3-pip python3.9
+	sudo apt -y install git make gettext g++ curl libpulse-dev python3-pip python3.9 python3.9-dev
 }
 
 install_deps_debian() {
 	echo "About to install git, make, gettext, curl, python3"
-	sudo apt -y install git make gettext g++ curl libpulse-dev python3-pip python3.9 apt-transport-https 
+	sudo apt -y install git make gettext g++ curl libpulse-dev python3-pip python3.9 python3.9-dev apt-transport-https 
 }
 
 install_deps() {
@@ -42,7 +42,7 @@ install_deps() {
 }
 
 check_deps() {
-	for dep in git node npm make g++ msgfmt python3.9 ; do
+	for dep in git make gettext g++ curl libpulse-dev python3-pip python3.9 python3.9-dev; do
 		if ! which $dep >/dev/null 2>&1 ; then
 			return 1
 		fi
@@ -50,15 +50,9 @@ check_deps() {
 	return 0
 }
 
-if ! check_deps ; then
-	install_deps
-fi
-	
-install_node
-
 venv_activate() {
 	if [[ -n "${VIRTUAL_ENV}" ]] ; then
-		deactivate
+		unset VIRTUAL_ENV & deactivate
 	elif [[ -n "${CONDA_DEFAULT_ENV}" ]] ; then 
 		CONDA_VERSION=$(cut -d ' ' -f 2 <<< "$(conda -V)")
 		VERSION_NUM=$(cut -d '.' -f 1,2 <<< "$CONDA_VERSION")
@@ -76,23 +70,23 @@ venv_activate() {
 	source .virtualenv/genie/bin/activate
 }
 
-venv_activate
-pip install --upgrade pip	
-echo $(which python)
-pip install genienlp
-pip install tensorboard
-python -m spacy download en_core_web_sm
+if ! check_deps ; then
+	install_deps
+fi
+	
+install_node
 
 if ! test -d genie-toolkit ; then
 	git clone https://github.com/stanford-oval/genie-toolkit
-	pushd genie-toolkit >/dev/null
+	pushd genie-toolkit > /dev/null
 	npm ci
+	npm link
 	popd >/dev/null
 fi
 
 if ! test -d genie-server ; then
 	git clone https://github.com/stanford-oval/genie-server
-	pushd genie-server >/dev/null
+	pushd genie-server > /dev/null
 	npm ci
 	popd
 fi
@@ -102,5 +96,12 @@ if ! test -d thingpedia-common-devices ; then
 	pushd thingpedia-common-devices > /dev/null
 	npm ci 
 	npx make
+	npm link genie-toolkit
 	popd
 fi
+
+venv_activate
+pip install --upgrade pip	
+echo $(which python)
+pip install genienlp tensorboard spacy 
+python -m spacy download en_core_web_sm
