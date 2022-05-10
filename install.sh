@@ -15,7 +15,7 @@ install_node() {
 
 install_deps_dnf() {
 	echo "About to install git, make, gettext, g++, pulseaudio, python3"
-	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel python3-pip python3.9 python3.9-dev
+	sudo dnf -y install git make gettext gcc-c++ pulseaudio-libs-devel python3-pip python3.9 python3.9-devel
 }
 
 install_deps_ubuntu() {
@@ -42,7 +42,7 @@ install_deps() {
 }
 
 check_deps() {
-	for dep in git make gettext g++ curl libpulse-dev python3-pip python3.9 python3.9-dev; do
+	for dep in git make gettext g++ curl libpulse-dev python3-pip python3.9; do
 		if ! which $dep >/dev/null 2>&1 ; then
 			return 1
 		fi
