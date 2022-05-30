@@ -10,8 +10,9 @@ Usage()
    echo "Usage: `basename $0` [options [parameters]]"
    echo "Options:"
    echo " -t | --test : Flag to enable test mode"
-   echo " -i | --input : Path to the test file (required)"
-   echo " -o | --output : Path to the output file (required)"
+   echo " -i | --input : Path to the test file (optional)"
+   echo " -o | --output : Path to the output file (optional)"
+   echo " -n | --nlp_server : Set the NLP server (required)"
    echo " -h | --help : Print help"
    exit 0
 }
@@ -86,11 +87,15 @@ run()
     i=1
     while IFS=$'\t' read -r pid utterance ttProgram ;
     do
-      ttProgramNew="${ttProgram//\"/\\\"}"
+    #   ttProgramNew='@com.yelp . restaurant ( ) filter geo == new Location(37.442156, -122.1634471, " Palo Alto, California " );'
+    #   ttProgramNew='@com.yelp . restaurant ( ) filter geo == new Location( " Palo Alto, California " );'
+	  ttProgramNew="${ttProgram//\"/\\\"}"
       response=$(curl -X POST -H "Content-Type: application/json" -d '{"type":"tt","code":"'"$ttProgramNew"'"}' http://localhost:3000/api/apps/create | python parser.py)
       printf "%03d-synthesized\n" $i >> $output
-      printf "U: %s ${ttProgram}\n\n" "\t" >> $output
-      printf "A: ${response}\n" >> $output
+	  printf "U: ${utterance}\n"  >> $output
+	  printf "UT: \$dialogue @org.thingpedia.dialogue.transaction.execute;\n"
+      printf "UT: %s ${ttProgram}\n" "\t" >> $output
+      printf "A: %s\n" "$response" >> $output
       printf "A: >> expecting = null\n" >> $output
       printf "\n====\n" >> $output
       i=$((i+1))
@@ -98,11 +103,11 @@ run()
       # then
       #   break
       # fi
+	#   break
     done < $input
+    pid=`ps -aef | grep node | grep './genie-server/dist/main.js' | awk '{print $2}'`
+    kill -9 ${pid}
   fi
-  pid=`ps -aef | grep node | grep './genie-server/dist/main.js' | awk '{print $2}'`
-  kill -9 ${pid}
-  exit 0
 }
 
 export THINGENGINE_HOME=./.home

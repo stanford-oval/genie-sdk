@@ -1,5 +1,6 @@
 .embeddings
 .home
+.vscode
 
 genie-toolkit
 genie-server
