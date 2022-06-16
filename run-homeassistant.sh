@@ -13,8 +13,13 @@ this_pid=$!
 
 echo "The HA PID is $this_pid"
 echo
-echo "Press any key to close Home Assistant and exit"
 echo
+echo "Now is possible to start GENIE Assistant to let it connect to Home Assistant"
+echo
+echo "Open the browser to interact with HomeAssistant (Username = user | Password = password)"
+echo
+echo
+echo "Press any key to close Home Assistant and exit"
 echo
 
 read -p "..> " -n1 -s

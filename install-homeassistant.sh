@@ -127,7 +127,7 @@ else
 	echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
 	echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
 	echo 
-	echo "THE TERMINAL IS GOING TO CLOSE, REOPEN IT AND START AGAIN THIS SCRIPT"
+	echo "CLOSE THE TERMINAL, REOPEN IT AND START AGAIN THIS SCRIPT (if pyenv will be not found, reboot the system)"
 	echo
 
 	read -p "Press key to continue.. " -n1 -s
