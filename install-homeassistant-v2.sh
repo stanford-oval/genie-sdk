@@ -149,8 +149,58 @@ test -d  ~/.pyenv/versions/3.9.10 || pyenv install 3.9.10
 
 pyenv global 3.9.10
 
-test -d ./ha/homeassistant-venv || cp -r ./thingpedia-common-devices/test/data/homeassistant/venv ./ha/homeassistant-venv
-test -d ./ha/homeassistant-config || cp -r ./thingpedia-common-devices/test/data/homeassistant/conf ./ha/homeassistant-config
+test -d ./ha/homeassistant-venv || mkdir -p ./ha/homeassistant-venv
+test -d ./ha/homeassistant-config || mkdir -p ./ha/homeassistant-config 
+
+echo
+echo "Starting Genie"
+echo
+
+exec run-genie.sh &
+that_pid=$!
+
+echo "The Genie PID is $that_pid"
+
+python3 -m venv ./ha/homeassistant-venv
+source ./ha/homeassistant-venv/bin/activate
+python3 -m pip install wheel
+
+pip3 install 'homeassistant==2022.6.6'
+
+echo
+echo "Starting Home Assistant"
+echo
+
+exec python3 -m homeassistant -c "./ha/homeassistant-config" &
+
+this_pid=$!
+
+echo "The Home Assistan PID is $this_pid"
+echo
+echo "wait 60 seconds for Home Assistant to install itself and set up"
+
+sleep 60
+
+echo
+echo "Set virtual devices"
+echo
+
+#cp ./setup-ha-virtual-devices.js ./thingpedia-common-devices/scripts/setup-ha-virtual-devices.js
+
+read -p "Press key to continue.. " -n1 -s
+
+cd ./thingpedia-common-devices
+exec ./scripts/setup-ha-virtual-devices.js main universe
+
+#exec ./thingpedia-common-devices/scripts/setup-ha-virtual-devices.js main universe
+
+kill -9 $(($this_pid))
+kill -9 $(($that_pid))
+
+deactivate
+
+cp -r ./thingpedia-common-devices/test/data/homeassistant/conf ./ha/homeassistant-config
+cp -r ./thingpedia-common-devices/test/data/homeassistant/venv ./ha/homeassistant-venv
 
 echo
 echo "SETUP COMPLETE"
