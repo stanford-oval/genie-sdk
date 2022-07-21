@@ -103,5 +103,5 @@ fi
 venv_activate
 pip install --upgrade pip	
 echo $(which python)
-pip install genienlp tensorboard spacy 
+pip install git:git@github.com:stanford-oval/genienlp.git#v3.6.0py39 tensorboard spacy 
 python -m spacy download en_core_web_sm
