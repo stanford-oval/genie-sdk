@@ -23,7 +23,7 @@ if ! test -d thingpedia-common-devices ; then
 	git clone -b wip/special-purpose-agent https://github.com/stanford-oval/thingpedia-common-devices
 	pushd thingpedia-common-devices > /dev/null
 	npm link genie-toolkit
-    npm ci 
+	npm ci 
 	npx make
 	popd
 fi
