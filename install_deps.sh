@@ -8,13 +8,13 @@ set -o pipefail
 
 check_mac_arch() {
 	if [ "$(uname -p)" = "intel" ]; then
-		echo "Running in Intel arch (Rosetta)"
+		echo "Arch: Intel (Rosetta)"
 		eval "$(/usr/local/homebrew/bin/brew shellenv)"
-		alias brew='/usr/local/homebrew/bin/brew'
+		alias brew="/usr/local/homebrew/bin/brew"
 	else
-		echo "Running in ARM arch"
+		echo "Arch: ARM"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
-		alias brew='/opt/homebrew/bin/brew'
+		alias brew="/opt/homebrew/bin/brew"
 	fi
 }
 
