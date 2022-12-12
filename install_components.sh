@@ -14,7 +14,7 @@ if ! test -d genie-toolkit ; then
 fi
 
 if ! test -d genie-server ; then
-	git clone https://github.com/stanford-oval/genie-server
+	git clone -b wip/geniescript https://github.com/stanford-oval/genie-server
 	pushd genie-server > /dev/null
 	git clean -fdx
 	npm ci
