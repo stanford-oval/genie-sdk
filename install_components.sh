@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-set -x
-set -o pipefail
-
 if ! test -d genie-toolkit ; then
 	git clone -b wip/levenshtein https://github.com/stanford-oval/genie-toolkit
 	pushd genie-toolkit > /dev/null
